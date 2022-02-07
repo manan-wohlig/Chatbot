@@ -1,8 +1,8 @@
 import Answer from '../mongooseModel/Answers.js'
 import mongoose from 'mongoose'
 import SerpApi from 'google-search-results-nodejs'
-const search = new SerpApi.GoogleSearch("fc33c641acf76c59fa38861b074206d2b1cab3587907106a42debf4804a16abc")
-
+import 'dotenv/config'
+const search = new SerpApi.GoogleSearch(process.env.SerpApi_KEY)
 
 export default {
     check: async (data) => {
@@ -10,14 +10,22 @@ export default {
         if (Object.keys(que).length === 0) {
             search.json ({"q": data}, async (result) => {
                 let storeData = new Answer({
+                    "_id": new mongoose.Types.ObjectId(),
                     "question": data,
-                    "answer": result
+                    "answer": result.knowledge_graph.description
                 })
+                console.log(result)
+                console.log(storeData)
                 await storeData.save()
-                return result;
+                return storeData.answer
             })
+            // setTimeout( async () => {
+            //     let ans = await Answer.find({ question: data })
+            //     return ans[0].answer
+            // },5000)
         } else {
-            return que.answer;
+            console.log(que[0].answer)
+            return que[0].answer;
         }
     }
 }

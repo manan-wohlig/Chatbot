@@ -3,6 +3,7 @@ const app = express();
 import bodyParser from 'body-parser';
 import AnswerModel from './models/AnswerModel.js'
 import mongoose from 'mongoose'
+import 'dotenv/config'
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -16,12 +17,13 @@ app.post("/", async (req, res) => {
     // let ans = req.body.question
     // console.log(ans)
     let ans = await AnswerModel.check(req.body.question)
+    console.log(ans)
     res.render("bot", {
         ans
     })
 })
 
-mongoose.connect('mongodb://Manan:stupefy@cluster0-shard-00-00.uloph.mongodb.net:27017,cluster0-shard-00-01.uloph.mongodb.net:27017,cluster0-shard-00-02.uloph.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-h6gkjp-shard-0&authSource=admin&retryWrites=true&w=majority', () => {
+mongoose.connect(process.env.DB_CONN, () => {
     console.log('Connected to database.')
 })
 
